@@ -87,8 +87,8 @@ const Navbar = async () => {
                   <AlertDialogTitle>GitHub Account Needed!</AlertDialogTitle>
                   <AlertDialogDescription>
                     You can only login to this website if you have your own
-                    GitHub account. If you don't have one, please create it
-                    first!
+                    GitHub account. If you don&apos;t have one, please create it
+                    first
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

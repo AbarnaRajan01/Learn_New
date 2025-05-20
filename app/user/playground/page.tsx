@@ -11,7 +11,7 @@ export default function PlaygroundPage() {
   const username = session?.user?.name || "Guest";
 
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const [_bugFixCompleted, setBugFixCompleted] = useState(false);
+  const [bugFixCompleted, setBugFixCompleted] = useState(false);
   const [showCodeQuiz, setShowCodeQuiz] = useState(false);
   const [showBugFixGame, setShowBugFixGame] = useState(false);
 
@@ -25,6 +25,7 @@ export default function PlaygroundPage() {
     setShowBugFixGame(false);
     setTimeout(() => router.push("/dashboard"), 2000);
   };
+  console.log(bugFixCompleted);
 
   // const closeModal = () => {
   //   setShowCodeQuiz(false);

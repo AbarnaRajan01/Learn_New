@@ -4,9 +4,16 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+interface UserData {
+  id: string;
+  email: string;
+  role: "student" | "admin" | string;
+  // Add other user fields as needed
+}
+
 const DashboardPage = () => {
   const { data: session } = useSession();
-  const [_userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -25,6 +32,7 @@ const DashboardPage = () => {
               router.push("/student/dashboard");
             } else if (data.user.role === "admin") {
               router.push("/admin/dashboard");
+              console.log(userData);
             }
           }
         } catch (error) {
