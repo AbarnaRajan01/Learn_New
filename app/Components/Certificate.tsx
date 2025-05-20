@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Document,
   Page,
@@ -34,7 +35,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const Certificate = ({ name, topic, date }) => (
+// Props type
+interface CertificateProps {
+  name: string;
+  topic: string;
+  date: string;
+}
+
+// Certificate PDF document component
+const Certificate: React.FC<CertificateProps> = ({ name, topic, date }) => (
   <Document>
     <Page style={styles.page}>
       <View style={styles.section}>
@@ -52,8 +61,12 @@ const Certificate = ({ name, topic, date }) => (
   </Document>
 );
 
-// Component to trigger the PDF download
-const CertificateDownloadButton = ({ name, topic, date }) => (
+// Button component to trigger PDF download
+const CertificateDownloadButton: React.FC<CertificateProps> = ({
+  name,
+  topic,
+  date,
+}) => (
   <div className="flex justify-center mt-4">
     <PDFDownloadLink
       document={<Certificate name={name} topic={topic} date={date} />}
@@ -65,3 +78,5 @@ const CertificateDownloadButton = ({ name, topic, date }) => (
     </PDFDownloadLink>
   </div>
 );
+
+export { Certificate, CertificateDownloadButton };

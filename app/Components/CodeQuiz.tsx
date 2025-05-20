@@ -1,11 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { client } from "@/sanity/lib/client";
 
 type CodeQuizGameProps = {
-  onComplete: () => void;
+  onComplete?: () => void;
 };
 
 type Question = {
@@ -37,28 +36,33 @@ const codeQuiz: Question[] = [
   },
 ];
 
+// Save certificate, with basic error handling
 async function saveCertificate(
   username: string,
   topic: string,
   score: number
 ): Promise<void> {
-  await client.create({
-    _type: "certificate",
-    username,
-    topic,
-    score,
-    date: new Date().toISOString(),
-  });
+  try {
+    await client.create({
+      _type: "certificate",
+      username,
+      topic,
+      score,
+      date: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Failed to save certificate:", error);
+  }
 }
 
 export default function CodeQuizGame({ onComplete }: CodeQuizGameProps) {
   const { data: session } = useSession();
-  const router = useRouter();
-  const username = session?.user?.name || "Guest";
+  const username = session?.user?.name ?? "Guest";
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
   const [finished, setFinished] = useState<boolean>(false);
+  const [saving, setSaving] = useState<boolean>(false);
 
   const handleAnswer = (index: number) => {
     if (index === codeQuiz[currentIndex].correct) {
@@ -72,12 +76,14 @@ export default function CodeQuizGame({ onComplete }: CodeQuizGameProps) {
   };
 
   useEffect(() => {
-    if (finished) {
+    if (finished && !saving) {
+      setSaving(true);
       saveCertificate(username, "Code Quiz Game", score).then(() => {
-        onComplete();
+        setSaving(false);
+        onComplete && onComplete();
       });
     }
-  }, [finished, username, score, onComplete]);
+  }, [finished, username, score, onComplete, saving]);
 
   return (
     <div className="p-6 bg-gray-900 rounded-xl text-white max-w-md mx-auto">
@@ -93,6 +99,7 @@ export default function CodeQuizGame({ onComplete }: CodeQuizGameProps) {
                 key={i}
                 onClick={() => handleAnswer(i)}
                 className="w-full p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition"
+                disabled={saving}
               >
                 {option}
               </button>
@@ -105,6 +112,9 @@ export default function CodeQuizGame({ onComplete }: CodeQuizGameProps) {
           <p className="mb-2">
             {username}, your score: {score}/{codeQuiz.length}
           </p>
+          {saving && (
+            <p className="text-sm text-gray-400">Saving certificate...</p>
+          )}
         </div>
       )}
     </div>

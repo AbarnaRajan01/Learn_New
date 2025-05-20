@@ -16,7 +16,8 @@ export default function QnABox() {
   ];
 
   const generateAnswer = async () => {
-    if (!prompt.trim()) return;
+    if (!prompt.trim()) return; // prevent empty prompt
+
     setLoading(true);
     setResponse("");
     try {
@@ -25,10 +26,14 @@ export default function QnABox() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
       });
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
       const data = await res.json();
       setResponse(data.answer || "No response.");
     } catch (error) {
       setResponse("⚠️ Something went wrong.");
+      console.error("Error fetching AI response:", error);
     }
     setLoading(false);
   };
@@ -40,6 +45,7 @@ export default function QnABox() {
       </h2>
 
       <select
+        value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
         className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400"
       >
@@ -51,10 +57,19 @@ export default function QnABox() {
         ))}
       </select>
 
+      {/* Optional: add input box to enter custom prompt */}
+      <input
+        type="text"
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Or type your question here"
+        className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400"
+      />
+
       <button
         onClick={generateAnswer}
-        disabled={loading}
-        className="w-full py-2 rounded-lg bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold hover:opacity-90 transition"
+        disabled={loading || !prompt.trim()}
+        className="w-full py-2 rounded-lg bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? "Generating..." : "Submit"}
       </button>

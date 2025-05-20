@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import React from "react";
-import { Search, X } from "lucide-react";
-import "./globals.css";
 
 const Navbar = async () => {
   const session = await auth();
@@ -30,34 +28,19 @@ const Navbar = async () => {
         </Link>
 
         <div className="hidden md:flex gap-6 font-medium text-sm text-green-300">
-          <Link
-            href="/user/Course"
-            className="relative group hover:text-blue-400 cursor-pointer"
-          >
-            Courses
-            <span className="absolute inset-0 animate-sparkle group-hover:opacity-100"></span>
-          </Link>
-          <Link
-            href="/user/roadmap"
-            className="relative group hover:text-blue-400 cursor-pointer"
-          >
-            Road Maps
-            <span className="absolute inset-0 animate-sparkle group-hover:opacity-100"></span>
-          </Link>
-          <Link
-            href="/user/playground"
-            className="relative group hover:text-blue-400 cursor-pointer"
-          >
-            Playground
-            <span className="absolute inset-0 animate-sparkle group-hover:opacity-100"></span>
-          </Link>
-          <Link
-            href="/user/Class"
-            className="relative group hover:text-blue-400 cursor-pointer"
-          >
-            AI Classes
-            <span className="absolute inset-0 animate-sparkle group-hover:opacity-100"></span>
-          </Link>
+          {["Courses", "Road Maps", "Playground", "AI Classes"].map((item) => {
+            const href = `/user/${item.replace(/\s/g, "")}`;
+            return (
+              <Link
+                key={item}
+                href={href}
+                className="relative group hover:text-blue-400 cursor-pointer"
+              >
+                {item}
+                <span className="absolute inset-0 animate-sparkle group-hover:opacity-100"></span>
+              </Link>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-6">
@@ -73,11 +56,9 @@ const Navbar = async () => {
                     src={session.user.image}
                     alt="Profile"
                     className="w-10 h-10 rounded-full border-2 border-green-400 shadow-md group-hover:scale-110 transition-transform duration-300 cursor-pointer"
+                    // For Next.js Image optimization, consider replacing <img> with next/image
                   />
                 )}
-                {/* <span className="text-lg font-semibold ">
-                  {session.user.name}
-                </span> */}
               </Link>
 
               {/* Log Out Button */}
@@ -134,9 +115,6 @@ const Navbar = async () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-
-              {/* Optional Progress Bar Placeholder */}
-              <div className="w-32">{/* <Progress value={33} /> */}</div>
             </>
           )}
         </div>
