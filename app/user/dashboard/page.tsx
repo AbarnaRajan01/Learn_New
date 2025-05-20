@@ -14,7 +14,6 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 
-// Certificate Component with styled content
 interface CertificateProps {
   name: string;
   topic: string;

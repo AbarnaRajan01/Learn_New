@@ -19,11 +19,10 @@ const DashboardPage = () => {
         const data = await response.json();
         if (data.success) {
           setUserData(data.user);
-          // Redirect based on role
           if (data.user.role === "student") {
-            router.push("/student/dashboard"); // customized student dashboard
+            router.push("/student/dashboard");
           } else if (data.user.role === "admin") {
-            router.push("/admin/dashboard"); // customized admin dashboard
+            router.push("/admin/dashboard");
           }
         }
       };
