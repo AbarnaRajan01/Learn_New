@@ -1,6 +1,10 @@
 "use client";
 
-import { auth, signIn, signOut } from "@/auth";
+// import { signOutAction, signInAction } from '@/lib/actions/auth-actions';
+import { auth } from "@/auth";
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,9 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import Image from "next/image";
-import Link from "next/link";
-import React from "react";
+import { signInAction, signOutAction } from "@/auth-action";
 
 const Navbar = async () => {
   const session = await auth();
@@ -61,12 +63,7 @@ const Navbar = async () => {
                   />
                 )}
               </Link>
-              <form
-                action={async () => {
-                  "use server";
-                  await signOut({ redirectTo: "/" });
-                }}
-              >
+              <form action={signOutAction}>
                 <button
                   type="submit"
                   className="px-5 py-2 hover:bg-gradient-to-r from-blue-400 to-green-500 text-white shadow-cyan-500/50 rounded-xl font-semibold transition-all duration-300 shadow-md"
@@ -97,12 +94,7 @@ const Navbar = async () => {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction asChild>
-                    <form
-                      action={async () => {
-                        "use server";
-                        await signIn("github");
-                      }}
-                    >
+                    <form action={signInAction}>
                       <button type="submit">Continue</button>
                     </form>
                   </AlertDialogAction>
