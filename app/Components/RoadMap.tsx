@@ -112,7 +112,7 @@ export default function RoadmapPage() {
               {activeRoadmap.title}
             </h2>
             {activeRoadmap.image?.asset?.url && (
-              <img
+              <Image
                 src={activeRoadmap.image.asset.url}
                 alt={activeRoadmap.title}
                 className="w-full h-56 object-cover rounded-lg mb-4"

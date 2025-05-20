@@ -108,7 +108,7 @@ export default function CoursePage() {
                 {course.title}
               </h3>
               {course.image?.asset?.url && (
-                <img
+                <Image
                   src={course.image.asset.url}
                   alt={course.title}
                   className="w-full h-36 object-cover rounded-lg mb-4"

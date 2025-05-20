@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -50,7 +51,7 @@ const Navbar = async () => {
                 className="flex items-center gap-3 group"
               >
                 {session.user.image && (
-                  <img
+                  <Image
                     src={session.user.image}
                     alt="Profile"
                     className="w-10 h-10 rounded-full border-2 border-green-400 shadow-md group-hover:scale-110 transition-transform duration-300 cursor-pointer"
