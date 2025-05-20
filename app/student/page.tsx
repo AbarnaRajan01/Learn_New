@@ -1,11 +1,12 @@
 "use client";
+
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const DashboardPage = () => {
   const { data: session } = useSession();
-  const [userData, setUserData] = useState<any>(null);
+  const [_userData, setUserData] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -13,17 +14,21 @@ const DashboardPage = () => {
       router.push("/");
     } else {
       const fetchUserData = async () => {
-        const response = await fetch(
-          `/api/user/details?email=${session.user?.email}`
-        );
-        const data = await response.json();
-        if (data.success) {
-          setUserData(data.user);
-          if (data.user.role === "student") {
-            router.push("/student/dashboard");
-          } else if (data.user.role === "admin") {
-            router.push("/admin/dashboard");
+        try {
+          const response = await fetch(
+            `/api/user/details?email=${session.user?.email}`
+          );
+          const data = await response.json();
+          if (data.success) {
+            setUserData(data.user);
+            if (data.user.role === "student") {
+              router.push("/student/dashboard");
+            } else if (data.user.role === "admin") {
+              router.push("/admin/dashboard");
+            }
           }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
         }
       };
 

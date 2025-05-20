@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import BugFixes from "@/app/Components/BugFixes";
 import CodeQuizGame from "@/app/Components/CodeQuiz";
-import { X } from "lucide-react";
 
 export default function PlaygroundPage() {
   const { data: session } = useSession();
@@ -12,7 +11,7 @@ export default function PlaygroundPage() {
   const username = session?.user?.name || "Guest";
 
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const [bugFixCompleted, setBugFixCompleted] = useState(false);
+  const [_bugFixCompleted, setBugFixCompleted] = useState(false);
   const [showCodeQuiz, setShowCodeQuiz] = useState(false);
   const [showBugFixGame, setShowBugFixGame] = useState(false);
 
@@ -27,10 +26,10 @@ export default function PlaygroundPage() {
     setTimeout(() => router.push("/dashboard"), 2000);
   };
 
-  const closeModal = () => {
-    setShowCodeQuiz(false);
-    setShowBugFixGame(false);
-  };
+  // const closeModal = () => {
+  //   setShowCodeQuiz(false);
+  //   setShowBugFixGame(false);
+  // };
 
   return (
     <div className="flex flex-col items-center py-12 bg-gray-800">

@@ -1,3 +1,5 @@
+"use client";
+
 import { auth, signIn, signOut } from "@/auth";
 import {
   AlertDialog,
@@ -37,7 +39,6 @@ const Navbar = async () => {
                 className="relative group hover:text-blue-400 cursor-pointer"
               >
                 {item}
-                <span className="absolute inset-0 animate-sparkle group-hover:opacity-100"></span>
               </Link>
             );
           })}
@@ -53,8 +54,10 @@ const Navbar = async () => {
                 {session.user.image && (
                   <Image
                     src={session.user.image}
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full border-2 border-green-400 shadow-md group-hover:scale-110 transition-transform duration-300 cursor-pointer"
+                    alt="Profile picture"
+                    width={40}
+                    height={40}
+                    className="rounded-full border-2 border-green-400 shadow-md group-hover:scale-110 transition-transform duration-300 cursor-pointer"
                   />
                 )}
               </Link>
@@ -77,12 +80,11 @@ const Navbar = async () => {
               <AlertDialogTrigger asChild>
                 <button
                   type="button"
-                  className="px-5 py-2 shadow-cyan-500/50 hover:bg-gradient-to-r from-blue-400 to-green-500 text-white hover:bg-green-600 rounded-xl font-semibold transition-all duration-300 shadow-md"
+                  className="px-5 py-2 shadow-cyan-500/50 hover:bg-gradient-to-r from-blue-400 to-green-500 text-white rounded-xl font-semibold transition-all duration-300 shadow-md"
                 >
                   Login
                 </button>
               </AlertDialogTrigger>
-
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>GitHub Account Needed!</AlertDialogTitle>

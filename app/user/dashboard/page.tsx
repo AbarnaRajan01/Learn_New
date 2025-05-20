@@ -20,6 +20,18 @@ interface CertificateProps {
   date: string;
 }
 
+interface UserActivity {
+  courseId: string;
+  status: string;
+}
+
+interface CertificateData {
+  _id: string;
+  topic: string;
+  score: number;
+  date: string;
+}
+
 const Certificate = ({ name, topic, date }: CertificateProps) => {
   const styles = StyleSheet.create({
     page: {
@@ -90,16 +102,16 @@ const Certificate = ({ name, topic, date }: CertificateProps) => {
 
 const DashboardHome = () => {
   const { data: session } = useSession();
-  const [userActivity, setUserActivity] = useState<any[]>([]);
+  const [userActivity, setUserActivity] = useState<UserActivity[]>([]);
   const [showAlert, setShowAlert] = useState(false);
-  const [certificates, setCertificates] = useState<any[]>([]);
+  const [certificates, setCertificates] = useState<CertificateData[]>([]);
   const [showCertificates, setShowCertificates] = useState(false);
 
   useEffect(() => {
     const fetchUserActivity = async () => {
-      if (session) {
-        const activity = await client.fetch(`
-          *[_type == "userActivity" && userId == "${session.user?.email}"]{
+      if (session?.user?.email) {
+        const activity: UserActivity[] = await client.fetch(`
+          *[_type == "userActivity" && userId == "${session.user.email}"]{
             courseId,
             status
           }
@@ -110,9 +122,9 @@ const DashboardHome = () => {
     };
 
     const fetchCertificates = async () => {
-      if (session) {
-        const certs = await client.fetch(`
-          *[_type == "certificate" && username == "${session.user?.name}"]{
+      if (session?.user?.name) {
+        const certs: CertificateData[] = await client.fetch(`
+          *[_type == "certificate" && username == "${session.user.name}"]{
             _id, topic, score, date
           }
         `);
