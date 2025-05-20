@@ -1,2 +1,13 @@
-import { handlers } from "@/auth" // Referring to the auth.ts we just created
-export const { GET, POST } = handlers
+import NextAuth from "next-auth";
+import GitHub from "next-auth/providers/github";
+
+const handler = NextAuth({
+  providers: [
+    GitHub({
+      clientId: process.env.AUTH_GITHUB_ID || "Ov23lity0PR6HNcorjlf",
+      clientSecret: process.env.AUTH_GITHUB_SECRET || "d03d9d4c3babcf55a61f1c174da828e9b9b2ba73",
+    }),
+  ],
+});
+
+export { handler as GET, handler as POST };
