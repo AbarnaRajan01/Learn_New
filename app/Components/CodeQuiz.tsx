@@ -80,7 +80,7 @@ export default function CodeQuizGame({ onComplete }: CodeQuizGameProps) {
       setSaving(true);
       saveCertificate(username, "Code Quiz Game", score).then(() => {
         setSaving(false);
-        onComplete && onComplete();
+        if (onComplete) onComplete();
       });
     }
   }, [finished, username, score, onComplete, saving]);
