@@ -3,15 +3,16 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { client } from "@/sanity/lib/client";
 
-type CodeQuizGameProps = {
+// Quiz Types
+interface CodeQuizGameProps {
   onComplete?: () => void;
-};
+}
 
-type Question = {
+interface Question {
   question: string;
   options: string[];
   correct: number;
-};
+}
 
 const codeQuiz: Question[] = [
   {
@@ -36,7 +37,6 @@ const codeQuiz: Question[] = [
   },
 ];
 
-// Save certificate, with basic error handling
 async function saveCertificate(
   username: string,
   topic: string,

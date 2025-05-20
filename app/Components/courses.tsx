@@ -3,6 +3,7 @@ import { client } from "@/sanity/lib/client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
+import Image from "next/image";
 
 type Course = {
   title: string;
@@ -141,7 +142,7 @@ export default function CoursePage() {
               {activeCourse.title}
             </h2>
             {activeCourse.image?.asset?.url && (
-              <img
+              <Image
                 src={activeCourse.image.asset.url}
                 alt={activeCourse.title}
                 className="w-full h-56 object-cover rounded-lg mb-4"

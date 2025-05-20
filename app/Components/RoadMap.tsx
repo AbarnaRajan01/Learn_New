@@ -2,6 +2,7 @@
 import { client } from "@/sanity/lib/client";
 import { useEffect, useState } from "react";
 import { Search, X } from "lucide-react";
+import Image from "next/image";
 
 type Roadmap = {
   title: string;
@@ -79,7 +80,7 @@ export default function RoadmapPage() {
                 {roadmap.title}
               </h3>
               {roadmap.image?.asset?.url && (
-                <img
+                <Image
                   src={roadmap.image.asset.url}
                   alt={roadmap.title}
                   className="w-full h-36 object-cover rounded-lg"
