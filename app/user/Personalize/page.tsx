@@ -1,16 +1,17 @@
 "use client";
 import { client } from "@/sanity/lib/client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const UserForm = () => {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
     interests: [] as string[],
     preferences: [] as string[],
-    role: "",
     levelPreference: "Beginner",
-    preferredLanguage: "English", // Added the preferredLanguage state
+    preferredLanguage: "English",
+    courseName: "", // New field
   });
 
   const interestsOptions = [
@@ -32,20 +33,22 @@ const UserForm = () => {
 
   const languageOptions = ["English", "Tamil", "Hindi"];
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleMultiSelectChange = (
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleMultiSelect = (
     field: "interests" | "preferences",
     value: string
   ) => {
     setFormData((prev) => {
-      const isSelected = prev[field].includes(value);
-      const updated = isSelected
+      const updated = prev[field].includes(value)
         ? prev[field].filter((v) => v !== value)
         : [...prev[field], value];
       return { ...prev, [field]: updated };
@@ -56,62 +59,31 @@ const UserForm = () => {
     e.preventDefault();
 
     await client.create({
-      _type: "user",
-      name: formData.name,
-      email: formData.email,
-      interests: formData.interests,
-      preferences: formData.preferences.join(", "),
-      role: formData.role,
-    });
-
-    await client.create({
       _type: "userPreferences",
-      userId: formData.email,
+      userId: crypto.randomUUID(),
       interests: formData.interests,
+      preferences: formData.preferences,
       levelPreference: formData.levelPreference,
-      preferredLanguage: formData.preferredLanguage, // Adding preferredLanguage field
+      preferredLanguage: formData.preferredLanguage,
+      courseName: formData.courseName,
     });
 
-    alert("Your information has been saved successfully!");
-    setFormData({
-      name: "",
-      email: "",
-      interests: [],
-      preferences: [],
-      role: "",
-      levelPreference: "Beginner",
-      preferredLanguage: "English", // Resetting preferredLanguage
+    const queryParams = new URLSearchParams({
+      level: formData.levelPreference,
+      language: formData.preferredLanguage,
+      course: formData.courseName,
     });
+
+    router.push(`/user/Course?${queryParams.toString()}`);
   };
 
   return (
     <div className="max-w-md mx-auto px-4 py-8">
-      {/* <h1 className="text-xl font-semibold mb-2 text-center text-gray-100">
-        Tell Us About Yourself
-      </h1> */}
       <form
         onSubmit={handleSubmit}
-        className="bg-gray-900 rounded-2xl shadow-lg p-6 space-y-4"
+        className="bg-gray-900 rounded-2xl shadow-lg p-6 space-y-6"
       >
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Name"
-          className="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:ring-1 focus:ring-green-400 text-white"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Email"
-          className="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 text-white"
-          required
-        />
-
+        {/* Interests */}
         <div>
           <label className="block mb-1 text-sm text-green-400 font-semibold">
             Interests
@@ -121,12 +93,12 @@ const UserForm = () => {
               <button
                 type="button"
                 key={item}
-                onClick={() => handleMultiSelectChange("interests", item)}
+                onClick={() => handleMultiSelect("interests", item)}
                 className={`px-3 py-1 text-xs rounded-full border ${
                   formData.interests.includes(item)
                     ? "bg-gradient-to-r from-blue-400 to-green-500 text-white"
                     : "bg-gray-700 text-gray-300"
-                } hover:scale-105 transition`}
+                }`}
               >
                 {item}
               </button>
@@ -134,21 +106,22 @@ const UserForm = () => {
           </div>
         </div>
 
+        {/* Preferences */}
         <div>
           <label className="block mb-1 text-sm text-green-400 font-semibold">
-            Preferences (Trending Courses)
+            Trending Course Preferences
           </label>
           <div className="flex flex-wrap gap-2">
             {trendingCourses.map((course) => (
               <button
                 type="button"
                 key={course}
-                onClick={() => handleMultiSelectChange("preferences", course)}
+                onClick={() => handleMultiSelect("preferences", course)}
                 className={`px-3 py-1 text-xs rounded-full border ${
                   formData.preferences.includes(course)
                     ? "bg-gradient-to-r from-blue-400 to-green-500 text-white"
                     : "bg-gray-700 text-gray-300"
-                } hover:scale-105 transition`}
+                }`}
               >
                 {course}
               </button>
@@ -156,24 +129,16 @@ const UserForm = () => {
           </div>
         </div>
 
-        <input
-          type="text"
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-          placeholder="Role (e.g., Student, Developer)"
-          className="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:ring-1 focus:ring-purple-400 text-white"
-        />
-
+        {/* Skill Level */}
         <div>
           <label className="block mb-1 text-sm text-green-400 font-semibold">
-            Level Preference
+            Skill Level
           </label>
           <select
             name="levelPreference"
             value={formData.levelPreference}
-            onChange={handleChange}
-            className="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400 text-white"
+            onChange={handleSelectChange}
+            className="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-sm text-white"
           >
             <option value="Beginner">Beginner</option>
             <option value="Intermediate">Intermediate</option>
@@ -181,6 +146,7 @@ const UserForm = () => {
           </select>
         </div>
 
+        {/* Language */}
         <div>
           <label className="block mb-1 text-sm text-green-400 font-semibold">
             Preferred Language
@@ -188,8 +154,8 @@ const UserForm = () => {
           <select
             name="preferredLanguage"
             value={formData.preferredLanguage}
-            onChange={handleChange}
-            className="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 text-white"
+            onChange={handleSelectChange}
+            className="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-sm text-white"
           >
             {languageOptions.map((lang) => (
               <option key={lang} value={lang}>
@@ -199,11 +165,27 @@ const UserForm = () => {
           </select>
         </div>
 
+        {/* Course Name Search */}
+        <div>
+          <label className="block mb-1 text-sm text-green-400 font-semibold">
+            Specific Course Name (Optional)
+          </label>
+          <input
+            type="text"
+            name="courseName"
+            value={formData.courseName}
+            onChange={handleInputChange}
+            placeholder="e.g., React, Docker"
+            className="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-sm text-white"
+          />
+        </div>
+
+        {/* Submit */}
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-blue-400 to-green-500 text-white font-semibold py-2 rounded-lg shadow-lg hover:shadow-green-500/50 transition duration-300 text-sm"
+          className="w-full bg-gradient-to-r from-blue-400 to-green-500 text-white font-semibold py-2 rounded-lg"
         >
-          Submit
+          Explore Courses
         </button>
       </form>
     </div>

@@ -52,7 +52,7 @@ const Navbar = async () => {
             <span className="absolute inset-0 animate-sparkle group-hover:opacity-100"></span>
           </Link>
           <Link
-            href="/user/ai-classes"
+            href="/user/Class"
             className="relative group hover:text-blue-400 cursor-pointer"
           >
             AI Classes
@@ -75,9 +75,9 @@ const Navbar = async () => {
                     className="w-10 h-10 rounded-full border-2 border-green-400 shadow-md group-hover:scale-110 transition-transform duration-300 cursor-pointer"
                   />
                 )}
-                <span className="text-lg font-semibold ">
+                {/* <span className="text-lg font-semibold ">
                   {session.user.name}
-                </span>
+                </span> */}
               </Link>
 
               {/* Log Out Button */}

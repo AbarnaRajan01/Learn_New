@@ -1,18 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { client } from "@/sanity/lib/client";
 
-// Define the Question type
+type CodeQuizGameProps = {
+  onComplete: () => void;
+};
+
 type Question = {
   question: string;
   options: string[];
   correct: number;
 };
 
-interface CodeQuizGameProps {
-  onComplete: () => void; // Adding onComplete prop to notify when game is complete
-}
-
-// Array of questions
 const codeQuiz: Question[] = [
   {
     question: "What does 'const' do in JavaScript?",
@@ -34,73 +35,76 @@ const codeQuiz: Question[] = [
     options: ["<style>", "<script>", "<css>", "<link>"],
     correct: 0,
   },
-  // Add more questions here
 ];
 
+async function saveCertificate(
+  username: string,
+  topic: string,
+  score: number
+): Promise<void> {
+  await client.create({
+    _type: "certificate",
+    username,
+    topic,
+    score,
+    date: new Date().toISOString(),
+  });
+}
+
 export default function CodeQuizGame({ onComplete }: CodeQuizGameProps) {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
+  const username = session?.user?.name || "Guest";
+
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [score, setScore] = useState<number>(0);
+  const [finished, setFinished] = useState<boolean>(false);
 
   const handleAnswer = (index: number) => {
-    if (index === codeQuiz[currentQuestionIndex].correct) {
-      setScore(score + 1);
+    if (index === codeQuiz[currentIndex].correct) {
+      setScore((prev) => prev + 1);
     }
-
-    if (currentQuestionIndex < codeQuiz.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    if (currentIndex < codeQuiz.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
     } else {
-      setGameOver(true);
+      setFinished(true);
     }
   };
 
-  // Call onComplete when the game is over
   useEffect(() => {
-    if (gameOver) {
-      onComplete(); // Notify that the game is complete
+    if (finished) {
+      saveCertificate(username, "Code Quiz Game", score).then(() => {
+        onComplete();
+      });
     }
-  }, [gameOver, onComplete]);
+  }, [finished, username, score, onComplete]);
 
   return (
     <div className="p-6 bg-gray-900 rounded-xl text-white max-w-md mx-auto">
-      {!gameOver ? (
-        <div>
+      {!finished ? (
+        <>
           <h2 className="text-xl font-semibold mb-4">
-            Question {currentQuestionIndex + 1}
+            Question {currentIndex + 1}
           </h2>
-          <p className="text-lg mb-4">
-            {codeQuiz[currentQuestionIndex].question}
-          </p>
+          <p className="text-lg mb-4">{codeQuiz[currentIndex].question}</p>
           <div className="space-y-4">
-            {codeQuiz[currentQuestionIndex].options.map(
-              (option: string, index: number) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswer(index)}
-                  className="w-full p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition duration-300"
-                >
-                  {option}
-                </button>
-              )
-            )}
+            {codeQuiz[currentIndex].options.map((option, i) => (
+              <button
+                key={i}
+                onClick={() => handleAnswer(i)}
+                className="w-full p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition"
+              >
+                {option}
+              </button>
+            ))}
           </div>
-        </div>
+        </>
       ) : (
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-4">Game Over!</h2>
-          <p>
-            Your score: {score} / {codeQuiz.length}
+          <h2 className="text-xl font-semibold mb-4">🎉 Quiz Completed!</h2>
+          <p className="mb-2">
+            {username}, your score: {score}/{codeQuiz.length}
           </p>
-          <button
-            onClick={() => {
-              setScore(0);
-              setCurrentQuestionIndex(0);
-              setGameOver(false);
-            }}
-            className="mt-4 bg-gradient-to-r from-blue-400 to-green-500 text-white py-2 px-6 rounded-xl"
-          >
-            Restart Game
-          </button>
         </div>
       )}
     </div>
