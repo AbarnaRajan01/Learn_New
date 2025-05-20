@@ -1,3 +1,4 @@
+"use client";
 import QnABox from "@/app/Components/AiClass";
 
 export default function HomePage() {
