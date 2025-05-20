@@ -1,6 +1,4 @@
-"use client";
-
-// import { signOutAction, signInAction } from '@/lib/actions/auth-actions';
+// app/Navbar.tsx
 import { auth } from "@/auth";
 import Image from "next/image";
 import Link from "next/link";
